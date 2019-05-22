@@ -46,7 +46,8 @@ getExpediente <- function(IdProyectoTipo = "", IdAutoresInternos = "",
             call. = FALSE)
     }
 
-    structure(list(content = parsed, path = path, response = resp), class = "expediente")
+    # structure(list(content = parsed, path = path, response = resp), class = "expediente")
+    parsed
 }
 
 print.expediente <- function(x, ...) {

@@ -78,7 +78,7 @@ expedienteToDF <- function(Expediente = expediente) {
                           purrr::map(~ xml2::xml_text(.)),
                       i = nodeset %>%
                           purrr::map(~ seq_along(.))) %>%
-        select(row, i, col_name_raw, cell_text) %>%
+        dplyr::select(row, i, col_name_raw, cell_text) %>%
         tidyr::unnest()
 
 }

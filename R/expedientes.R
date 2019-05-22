@@ -80,7 +80,7 @@ expedienteToDF <- function(Expediente = expediente) {
                           purrr::map(~ seq_along(.))) %>%
         dplyr::select(row, i, col_name_raw, cell_text) %>%
         tidyr::unnest() %>%
-        dplyr::select(-i) %>%
+        dplyr::select(-i, -row) %>%
         tidyr::spread(key = col_name_raw, value = cell_text)
 
 }

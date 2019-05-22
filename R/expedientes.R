@@ -60,6 +60,7 @@ print.expediente <- function(x, ...) {
 #' Función que parsea un expediente
 #'
 #' @param Expediente expediente, Ver getExpediente
+#' @importFrom dplyr %>%
 
 expedienteToDF <- function(Expediente = expediente) {
     xml2::xml_ns_strip(Expediente)

@@ -11,6 +11,8 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     httr,
-    xml2
+    xml2,
+    dplyr
 Suggests: 
     testthat
+RoxygenNote: 6.1.1

@@ -62,9 +62,9 @@ print.expediente <- function(x, ...) {
 #' @param Expediente expediente, Ver getExpediente
 
 expedienteToDF <- function(Expediente = expediente) {
-    xml2::xml_ns_strip(expediente$content)
+    xml2::xml_ns_strip(Expediente)
 
-    rows <- expediente$content %>%
+    rows <- Expediente %>%
         xml2::xml_find_all("//expedienteAvanzado") %>%
         purrr::map(~ xml2::xml_find_all(., "*"))
 

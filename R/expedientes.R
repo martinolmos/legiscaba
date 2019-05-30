@@ -10,6 +10,7 @@
 #' @param FechaHasta character, Acotar búqueda hasta fecha. Formato dd/mm/aaaa
 #' @param AnioParlamentario integer, Acotar la búsqueda a un año. Formato aaaa
 #' @param Limite integer, Limitar la respuesta a un número de registros
+#' @export
 
 getExpediente <- function(IdProyectoTipo = "", IdAutoresInternos = "",
                           IdUbicacion = "", IdEstado = "", Sumario = "",
@@ -31,31 +32,23 @@ getExpediente <- function(IdProyectoTipo = "", IdAutoresInternos = "",
 
     resp <- httr::GET(url = myurl, ua)
 
-        if (httr::http_type(resp) != "text/xml") {
+    if (httr::status_code(resp) != 200) {
+        stop(
+            sprintf(
+                "Falló el requerimiento a la API [%s]\n%s",
+                httr::status_code(resp)),
+            call. = FALSE)
+    }
+
+    if (httr::http_type(resp) != "text/xml") {
         stop("la API no retornó un xml", call. = FALSE)
     }
 
     parsed <- httr::content(resp)
 
-    if (httr::status_code(resp) != 200) {
-        stop(
-            sprintf(
-                "Falló el requerimiento a la API [%s]\n%s",
-                httr::status_code(resp),
-                parsed$message),
-            call. = FALSE)
-    }
-
-    # structure(list(content = parsed, path = path, response = resp), class = "expediente")
-    parsed
+    expedienteToDF(parsed)
 }
 
-print.expediente <- function(x, ...) {
-    cat("<Parlamentaria ", x$path, "\n", sep = "")
-    str(x$content)
-    invisible(x)
-
-}
 
 #' Función que parsea un expediente
 #'

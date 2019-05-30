@@ -2,13 +2,13 @@
 % Please edit documentation in R/expedientes.R
 \name{expedienteToDF}
 \alias{expedienteToDF}
-\title{Función que parsea un expediente}
+\title{Función que parsea un expediente de XML a tibble}
 \usage{
 expedienteToDF(Expediente = expediente)
 }
 \arguments{
-\item{Expediente}{expediente, Ver getExpediente}
+\item{Expediente}{expediente en formato XML}
 }
 \description{
-Función que parsea un expediente
+Función que parsea un expediente de XML a tibble
 }

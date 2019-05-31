@@ -118,27 +118,48 @@ getExpedienteGiros <- function(IdExpediente) {
 #' Función que parsea un giro de XML a tibble
 #'
 #' @param Giro giro en formato XML
+
+# giroToDF <- function(Giro) {
+#     xml2::xml_ns_strip(Giro)
+#
+#     rows <- Giro %>%
+#         xml2::xml_find_all("//expedienteGiros") %>%
+#         purrr::map(~ xml2::xml_find_all(., "*"))
+#
+#     rows_df <- dplyr::tibble(row = seq_along(rows),
+#                              nodeset = rows)
+#
+#     rows_df %>%
+#         dplyr::mutate(col_name_raw = nodeset %>%
+#                           purrr::map(~ xml2::xml_name(.)),
+#                       cell_text = nodeset %>%
+#                           purrr::map(~ xml2::xml_text(.)),
+#                       i = nodeset %>%
+#                           purrr::map(~ seq_along(.))) %>%
+#         dplyr::select(row, i, col_name_raw, cell_text) %>%
+#         tidyr::unnest() %>%
+#         dplyr::select(-i) %>%
+#         tidyr::spread(key = col_name_raw, value = cell_text) %>%
+#         dplyr::select(-row)
+#
+# }
+
 giroToDF <- function(Giro) {
     xml2::xml_ns_strip(Giro)
 
-    rows <- Giro %>%
+    Giro %>%
         xml2::xml_find_all("//expedienteGiros") %>%
-        purrr::map(~ xml2::xml_find_all(., "*"))
-
-    rows_df <- dplyr::tibble(row = seq_along(rows),
-                             nodeset = rows)
-
-    rows_df %>%
-        dplyr::mutate(col_name_raw = nodeset %>%
-                          purrr::map(~ xml2::xml_name(.)),
-                      cell_text = nodeset %>%
-                          purrr::map(~ xml2::xml_text(.)),
-                      i = nodeset %>%
-                          purrr::map(~ seq_along(.))) %>%
-        dplyr::select(row, i, col_name_raw, cell_text) %>%
-        tidyr::unnest() %>%
-        dplyr::select(-i) %>%
-        tidyr::spread(key = col_name_raw, value = cell_text) %>%
-        dplyr::select(-row)
+        purrr::map_df(~ dplyr::tibble(id_expediente = xml2::xml_child(.,"id_expediente") %>%
+                                          xml2::xml_text(),
+                                      orden = xml2::xml_child(.,"orden") %>%
+                                          xml2::xml_text(),
+                                      expediente_giro_tipo_des = xml2::xml_child(., "expediente_giro_tipo_des") %>%
+                                          xml2::xml_text(),
+                                      id_comision = xml2::xml_child(.,"id_comision") %>%
+                                          xml2::xml_text(),
+                                      comision_des = xml2::xml_child(.,"comision_des") %>%
+                                          xml2::xml_text(),
+                                      comision_url = xml2::xml_child(.,"comision_url") %>%
+                                          xml2::xml_text()))
 
 }

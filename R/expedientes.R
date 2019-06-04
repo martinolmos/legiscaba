@@ -174,7 +174,7 @@ getExpMovimientos <- function(IdExpediente){
 
 }
 
-#' Función que parsea un movimiento de XML a tibble
+#' Función que parsea los movimientos de un expediente de XML a tibble
 #'
 #' @param Movimientos movimientos de un expediente en formato XML
 
@@ -193,6 +193,61 @@ moviToDF <- function(Movimientos) {
             ubicacion_des = xml2::xml_child(., "ubicacion_des") %>%
                 xml2::xml_text(),
             descripcion = xml2::xml_child(.,"descripcion") %>%
+                xml2::xml_text()))
+
+}
+
+#' Funcion que requiere el expediente cabeza de un expediente
+#'
+#' @param IdExpediente integer ID de un expediente
+
+getExpedienteCabeza <- function(IdExpediente) {
+    base_url <- "https://parlamentaria.legislatura.gov.ar"
+
+    path <- "webservices/Json.asmx/GetExpedienteCabeza"
+
+    query <- list(IdExpediente = IdExpediente)
+
+    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+
+    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+
+    resp <- httr::GET(url = myurl, ua)
+
+    if (httr::status_code(resp) != 200) {
+        stop(
+            sprintf(
+                "Falló el requerimiento a la API [%s]\n%s",
+                httr::status_code(resp)),
+            call. = FALSE)
+    }
+
+    if (httr::http_type(resp) != "text/xml") {
+        stop("la API no retornó un xml", call. = FALSE)
+    }
+
+    parsed <- httr::content(resp)
+    expCabezaToDF(parsed)
+
+}
+
+#' Función que parsea el expediente cabeza de un expediente de XML a tibble
+#'
+#' @param ExpCabeza expediente cabeza de un expediente en formato XML
+
+
+expCabezaToDF <- function(ExpCabeza) {
+
+    xml2::xml_ns_strip(ExpCabeza)
+
+    ExpCabeza %>%
+        xml2::xml_find_all("//expedienteCabeza") %>%
+        purrr::map_df(~dplyr::tibble(
+            id_expediente_cabeza = xml2::xml_child(.,"id_expediente") %>%
+                xml2::xml_text(),
+            id_expediente_agregado = xml2::xml_child(.,"agregado_id_expediente") %>%
+                xml2::xml_text(),
+            nro_expediente_cabeza = xml2::xml_child(.,"cabeza_nro_de_expediente") %>%
                 xml2::xml_text()))
 
 }

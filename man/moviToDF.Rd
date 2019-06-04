@@ -2,7 +2,7 @@
 % Please edit documentation in R/expedientes.R
 \name{moviToDF}
 \alias{moviToDF}
-\title{Función que parsea un movimiento de XML a tibble}
+\title{Función que parsea los movimientos de un expediente de XML a tibble}
 \usage{
 moviToDF(Movimientos)
 }
@@ -10,5 +10,5 @@ moviToDF(Movimientos)
 \item{Movimientos}{movimientos de un expediente en formato XML}
 }
 \description{
-Función que parsea un movimiento de XML a tibble
+Función que parsea los movimientos de un expediente de XML a tibble
 }

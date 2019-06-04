@@ -80,9 +80,9 @@ expedienteToDF <- function(Expediente = expediente) {
 
 }
 
-#' Función para requerir los giros de un expediente
+#' Funcion para requerir los giros de un expediente
 #'
-#' @param IdExpediente Integer Número de ID del expediente
+#' @param IdExpediente Integer Numero de ID del expediente
 #' @export
 
 getExpedienteGiros <- function(IdExpediente) {
@@ -111,43 +111,18 @@ getExpedienteGiros <- function(IdExpediente) {
     }
 
     parsed <- httr::content(resp)
-    giroToDF(parsed)
+    girosToDF(parsed)
 
 }
 
 #' Función que parsea un giro de XML a tibble
 #'
-#' @param Giro giro en formato XML
+#' @param Giros giros de un expediente en formato XML
 
-# giroToDF <- function(Giro) {
-#     xml2::xml_ns_strip(Giro)
-#
-#     rows <- Giro %>%
-#         xml2::xml_find_all("//expedienteGiros") %>%
-#         purrr::map(~ xml2::xml_find_all(., "*"))
-#
-#     rows_df <- dplyr::tibble(row = seq_along(rows),
-#                              nodeset = rows)
-#
-#     rows_df %>%
-#         dplyr::mutate(col_name_raw = nodeset %>%
-#                           purrr::map(~ xml2::xml_name(.)),
-#                       cell_text = nodeset %>%
-#                           purrr::map(~ xml2::xml_text(.)),
-#                       i = nodeset %>%
-#                           purrr::map(~ seq_along(.))) %>%
-#         dplyr::select(row, i, col_name_raw, cell_text) %>%
-#         tidyr::unnest() %>%
-#         dplyr::select(-i) %>%
-#         tidyr::spread(key = col_name_raw, value = cell_text) %>%
-#         dplyr::select(-row)
-#
-# }
+girosToDF <- function(Giros) {
+    xml2::xml_ns_strip(Giros)
 
-giroToDF <- function(Giro) {
-    xml2::xml_ns_strip(Giro)
-
-    Giro %>%
+    Giros %>%
         xml2::xml_find_all("//expedienteGiros") %>%
         purrr::map_df(~ dplyr::tibble(id_expediente = xml2::xml_child(.,"id_expediente") %>%
                                           xml2::xml_text(),
@@ -161,5 +136,63 @@ giroToDF <- function(Giro) {
                                           xml2::xml_text(),
                                       comision_url = xml2::xml_child(.,"comision_url") %>%
                                           xml2::xml_text()))
+
+}
+
+#' Funcion para requerir los movimientos de un expediente
+#'
+#' @param IdExpediente integer Numero de ID de un expediente
+#' @export
+
+getExpMovimientos <- function(IdExpediente){
+    base_url <- "https://parlamentaria.legislatura.gov.ar"
+
+    path <- "webservices/Json.asmx/GetExpedienteMovimientos"
+
+    query <- list(IdExpediente = IdExpediente)
+
+    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+
+    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+
+    resp <- httr::GET(url = myurl, ua)
+
+    if (httr::status_code(resp) != 200) {
+        stop(
+            sprintf(
+                "Falló el requerimiento a la API [%s]\n%s",
+                httr::status_code(resp)),
+            call. = FALSE)
+    }
+
+    if (httr::http_type(resp) != "text/xml") {
+        stop("la API no retornó un xml", call. = FALSE)
+    }
+
+    parsed <- httr::content(resp)
+    moviToDF(parsed)
+
+}
+
+#' Función que parsea un movimiento de XML a tibble
+#'
+#' @param Movimientos movimientos de un expediente en formato XML
+
+
+moviToDF <- function(Movimientos) {
+
+    xml2::xml_ns_strip(Movimientos)
+
+    Movimientos %>%
+        xml2::xml_find_all("//expedienteMovimientos") %>%
+        purrr::map_df(~dplyr::tibble(
+            id_expediente = xml2::xml_child(.,"id_expediente") %>%
+                xml2::xml_text(),
+            fch_movimiento = xml2::xml_child(.,"fch_movimiento") %>%
+                xml2::xml_text(),
+            ubicacion_des = xml2::xml_child(., "ubicacion_des") %>%
+                xml2::xml_text(),
+            descripcion = xml2::xml_child(.,"descripcion") %>%
+                xml2::xml_text()))
 
 }

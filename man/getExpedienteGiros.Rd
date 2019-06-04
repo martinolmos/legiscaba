@@ -2,13 +2,13 @@
 % Please edit documentation in R/expedientes.R
 \name{getExpedienteGiros}
 \alias{getExpedienteGiros}
-\title{Función para requerir los giros de un expediente}
+\title{Funcion para requerir los giros de un expediente}
 \usage{
 getExpedienteGiros(IdExpediente)
 }
 \arguments{
-\item{IdExpediente}{Integer Número de ID del expediente}
+\item{IdExpediente}{Integer Numero de ID del expediente}
 }
 \description{
-Función para requerir los giros de un expediente
+Funcion para requerir los giros de un expediente
 }

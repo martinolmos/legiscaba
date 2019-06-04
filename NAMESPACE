@@ -2,5 +2,6 @@
 
 export(getExpMovimientos)
 export(getExpediente)
+export(getExpedienteCabeza)
 export(getExpedienteGiros)
 importFrom(dplyr,"%>%")

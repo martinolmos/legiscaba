@@ -200,6 +200,7 @@ moviToDF <- function(Movimientos) {
 #' Funcion que requiere el expediente cabeza de un expediente
 #'
 #' @param IdExpediente integer ID de un expediente
+#' @export
 
 getExpedienteCabeza <- function(IdExpediente) {
     base_url <- "https://parlamentaria.legislatura.gov.ar"

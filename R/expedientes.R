@@ -90,7 +90,7 @@ getExpedienteGiros <- function(IdExpediente) {
 
     path <- "webservices/Json.asmx/GetExpedienteGiros"
 
-    query <- list(IdExpediente = IdExpediente)
+    query <- list(IdExpediente = as.integer(IdExpediente))
 
     myurl <- httr::modify_url(url = base_url, path = path, query = query)
 
@@ -124,18 +124,19 @@ girosToDF <- function(Giros) {
 
     Giros %>%
         xml2::xml_find_all("//expedienteGiros") %>%
-        purrr::map_df(~ dplyr::tibble(id_expediente = xml2::xml_child(.,"id_expediente") %>%
-                                          xml2::xml_text(),
-                                      orden = xml2::xml_child(.,"orden") %>%
-                                          xml2::xml_text(),
-                                      expediente_giro_tipo_des = xml2::xml_child(., "expediente_giro_tipo_des") %>%
-                                          xml2::xml_text(),
-                                      id_comision = xml2::xml_child(.,"id_comision") %>%
-                                          xml2::xml_text(),
-                                      comision_des = xml2::xml_child(.,"comision_des") %>%
-                                          xml2::xml_text(),
-                                      comision_url = xml2::xml_child(.,"comision_url") %>%
-                                          xml2::xml_text()))
+        purrr::map_df(~ dplyr::tibble(
+            id_expediente = xml2::xml_child(.,"id_expediente") %>%
+                xml2::xml_text(),
+            orden = xml2::xml_child(.,"orden") %>%
+                xml2::xml_text(),
+            expediente_giro_tipo_des = xml2::xml_child(., "expediente_giro_tipo_des") %>%
+                xml2::xml_text(),
+            id_comision = xml2::xml_child(.,"id_comision") %>%
+                xml2::xml_text(),
+            comision_des = xml2::xml_child(.,"comision_des") %>%
+                xml2::xml_text(),
+            comision_url = xml2::xml_child(.,"comision_url") %>%
+                xml2::xml_text()))
 
 }
 
@@ -149,7 +150,7 @@ getExpMovimientos <- function(IdExpediente){
 
     path <- "webservices/Json.asmx/GetExpedienteMovimientos"
 
-    query <- list(IdExpediente = IdExpediente)
+    query <- list(IdExpediente = as.integer(IdExpediente))
 
     myurl <- httr::modify_url(url = base_url, path = path, query = query)
 
@@ -207,7 +208,7 @@ getExpedienteCabeza <- function(IdExpediente) {
 
     path <- "webservices/Json.asmx/GetExpedienteCabeza"
 
-    query <- list(IdExpediente = IdExpediente)
+    query <- list(IdExpediente = as.integer(IdExpediente))
 
     myurl <- httr::modify_url(url = base_url, path = path, query = query)
 
@@ -263,7 +264,7 @@ getVotacionesExpediente <- function(IdExpediente) {
 
     path <- "webservices/Json.asmx/GetVotacionesExpediente"
 
-    query <- list(IdExpediente = IdExpediente)
+    query <- list(IdExpediente = as.integer(IdExpediente))
 
     myurl <- httr::modify_url(url = base_url, path = path, query = query)
 

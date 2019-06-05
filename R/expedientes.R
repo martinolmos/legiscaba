@@ -35,7 +35,7 @@ getExpediente <- function(IdProyectoTipo = "", IdAutoresInternos = "",
     if (httr::status_code(resp) != 200) {
         stop(
             sprintf(
-                "Falló el requerimiento a la API [%s]\n%s",
+                "Falló el requerimiento a la API [%s]",
                 httr::status_code(resp)),
             call. = FALSE)
     }
@@ -101,7 +101,7 @@ getExpedienteGiros <- function(IdExpediente) {
     if (httr::status_code(resp) != 200) {
         stop(
             sprintf(
-                "Falló el requerimiento a la API [%s]\n%s",
+                "Falló el requerimiento a la API [%s]",
                 httr::status_code(resp)),
             call. = FALSE)
     }
@@ -160,7 +160,7 @@ getExpMovimientos <- function(IdExpediente){
     if (httr::status_code(resp) != 200) {
         stop(
             sprintf(
-                "Falló el requerimiento a la API [%s]\n%s",
+                "Falló el requerimiento a la API [%s]",
                 httr::status_code(resp)),
             call. = FALSE)
     }
@@ -218,7 +218,7 @@ getExpedienteCabeza <- function(IdExpediente) {
     if (httr::status_code(resp) != 200) {
         stop(
             sprintf(
-                "Falló el requerimiento a la API [%s]\n%s",
+                "Falló el requerimiento a la API [%s]",
                 httr::status_code(resp)),
             call. = FALSE)
     }
@@ -252,3 +252,107 @@ expCabezaToDF <- function(ExpCabeza) {
                 xml2::xml_text()))
 
 }
+
+#' Funcion que requiere las votaciones de un expediente
+#'
+#' @param IdExpediente integer ID de un expediente
+#' @export
+
+getVotacionesExpediente <- function(IdExpediente) {
+    base_url <- "https://parlamentaria.legislatura.gov.ar"
+
+    path <- "webservices/Json.asmx/GetVotacionesExpediente"
+
+    query <- list(IdExpediente = IdExpediente)
+
+    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+
+    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+
+    resp <- httr::GET(url = myurl, ua)
+
+    if (httr::status_code(resp) != 200) {
+        stop(
+            sprintf(
+                "Falló el requerimiento a la API [%s]",
+                httr::status_code(resp)),
+            call. = FALSE)
+    }
+
+    if (httr::http_type(resp) != "text/xml") {
+        stop("la API no retornó un xml", call. = FALSE)
+    }
+
+    parsed <- httr::content(resp)
+    votacionesToDF(parsed)
+
+}
+
+#' Función que parsea las votaciones de un expediente de XML a tibble
+#'
+#' @param Votaciones expediente cabeza de un expediente en formato XML
+
+
+votacionesToDF <- function(Votaciones) {
+    votaciones <- list()
+
+    xml2::xml_ns_strip(Votaciones)
+
+    votaciones$general <- Votaciones %>%
+        xml2::xml_find_first("//votacionExpediente") %>%
+        purrr::map_df(~dplyr::tibble(
+            afirmativos = xml2::xml_child(.,"afirmativos") %>%
+                xml2::xml_text(),
+            negativos = xml2::xml_child(.,"negativos") %>%
+                xml2::xml_text(),
+            abstenciones = xml2::xml_child(.,"abstenciones") %>%
+                xml2::xml_text()),
+            sin_votar = xml2::xml_child(.,"sin_votar"),
+            id_votacion = xml2::xml_child(.,"id_votacion"),
+            asunto = xml2::xml_child(.,"asunto"),
+            id_sesion = xml2::xml_child(.,"id_sesion"),
+            fch_sesion = xml2::xml_child(.,"fch_sesion"),
+            tipo_sesion = xml2::xml_child(.,"tipo_sesion"),
+            desc_sesion = xml2::xml_child(.,"desc_sesion"),
+            presidente_sesion = xml2::xml_child(.,"presidente_sesion"),
+            secretarios_sesion = xml2::xml_child(.,"secretarios_sesion"))
+
+    votaciones$por_bloque <- Votaciones %>%
+        xml2::xml_find_first("votacionExpediente") %>%
+        xml2::xml_find_all("VotosBloque") %>%
+        purrr::map_df(~dplyr::tibble(
+            afirmativos = xml2::xml_child(.,"afirmativos") %>%
+                xml2::xml_text(),
+            negativos = xml2::xml_child(.,"negativos") %>%
+                xml2::xml_text(),
+            abstenciones = xml2::xml_child(.,"abstenciones") %>%
+                xml2::xml_text(),
+            sin_votar = xml2::xml_child(.,"sin_votar") %>%
+                xml2::xml_text(),
+            id_bloque = xml2::xml_child(.,"id_bloque") %>%
+                xml2::xml_text(),
+            bloque = xml2::xml_child(.,"bloque") %>%
+                xml2::xml_text()
+        ))
+
+    votaciones$por_legislador <- Votaciones %>%
+        xml2::xml_find_first("votacionExpediente") %>%
+        xml2::xml_find_all("VotoLegislador") %>%
+        purrr::map_df(~dplyr::tibble(
+            id_legilador = xml2::xml_child(.,"id_legilador") %>%
+                xml2::xml_text(),
+            apellido = xml2::xml_child(.,"apellido") %>%
+                xml2::xml_text(),
+            nombre = xml2::xml_child(.,"nombre") %>%
+                xml2::xml_child(),
+            id_bloque = xml2::xml_child(.,"id_bloque") %>%
+                xml2::xml_text(),
+            bloque = xml2::xml_child(.,"bloque") %>%
+                xml2::xml_text(),
+            presencia = xml2::xml_child(.,"presencia") %>%
+                xml2::xml_text(),
+            voto = xml2::xml_child(.,"voto") %>%
+                xml2::xml_text()
+        ))
+}
+

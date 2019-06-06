@@ -297,7 +297,7 @@ getVotacionesExpediente <- function(IdExpediente) {
 votacionesToDF <- function(Votaciones) {
     votaciones <- list()
 
-    xml2::xml_ns_strip(Votaciones)
+    # xml2::xml_ns_strip(Votaciones)
 
     votaciones$general <- Votaciones %>%
         xml2::xml_find_first("//VotacionExpediente") %>%

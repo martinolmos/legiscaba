@@ -369,10 +369,6 @@ votacionesToDF <- function(Votaciones) {
             desc_sesion = xml2::xml_parent(.) %>%
                 xml2::xml_parent() %>%
                 xml2::xml_child("desc_sesion") %>%
-                xml2::xml_text(),
-            presidente_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("presidente_sesion") %>%
                 xml2::xml_text()
             )
             }
@@ -418,10 +414,6 @@ votacionesToDF <- function(Votaciones) {
             desc_sesion = xml2::xml_parent(.) %>%
                 xml2::xml_parent() %>%
                 xml2::xml_child("desc_sesion") %>%
-                xml2::xml_text(),
-            presidente_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("presidente_sesion") %>%
                 xml2::xml_text()
             )
             }

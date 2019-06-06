@@ -299,7 +299,7 @@ votacionesToDF <- function(Votaciones) {
 
     xml2::xml_ns_strip(Votaciones)
 
-    Votaciones <- xml2::xml_find_first("//VotacionExpediente")
+    Votaciones <- Votaciones %>% xml2::xml_find_first("//VotacionExpediente")
 
     votaciones$general <- Votaciones %>%
         purrr::map_df(~dplyr::tibble(

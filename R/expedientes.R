@@ -350,26 +350,26 @@ votacionesToDF <- function(Votaciones) {
                 xml2::xml_parent() %>%
                 xml2::xml_child("id_votacion") %>%
                 xml2::xml_text(),
-            asunto = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("asunto") %>%
-                xml2::xml_text(),
+            # asunto = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("asunto") %>%
+            #     xml2::xml_text(),
             id_sesion = xml2::xml_parent(.) %>%
                 xml2::xml_parent() %>%
                 xml2::xml_child("id_sesion") %>%
-                xml2::xml_text(),
-            fch_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("fch_sesion") %>%
-                xml2::xml_text(),
-            tipo_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("tipo_sesion") %>%
-                xml2::xml_text(),
-            desc_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("desc_sesion") %>%
                 xml2::xml_text()
+            # fch_sesion = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("fch_sesion") %>%
+            #     xml2::xml_text(),
+            # tipo_sesion = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("tipo_sesion") %>%
+            #     xml2::xml_text(),
+            # desc_sesion = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("desc_sesion") %>%
+            #     xml2::xml_text()
             )
             }
 
@@ -395,26 +395,26 @@ votacionesToDF <- function(Votaciones) {
                 xml2::xml_parent() %>%
                 xml2::xml_child("id_votacion") %>%
                 xml2::xml_text(),
-            asunto = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("asunto") %>%
-                xml2::xml_text(),
+            # asunto = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("asunto") %>%
+            #     xml2::xml_text(),
             id_sesion = xml2::xml_parent(.) %>%
                 xml2::xml_parent() %>%
                 xml2::xml_child("id_sesion") %>%
-                xml2::xml_text(),
-            fch_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("fch_sesion") %>%
-                xml2::xml_text(),
-            tipo_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("tipo_sesion") %>%
-                xml2::xml_text(),
-            desc_sesion = xml2::xml_parent(.) %>%
-                xml2::xml_parent() %>%
-                xml2::xml_child("desc_sesion") %>%
                 xml2::xml_text()
+            # fch_sesion = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("fch_sesion") %>%
+            #     xml2::xml_text(),
+            # tipo_sesion = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("tipo_sesion") %>%
+            #     xml2::xml_text(),
+            # desc_sesion = xml2::xml_parent(.) %>%
+            #     xml2::xml_parent() %>%
+            #     xml2::xml_child("desc_sesion") %>%
+            #     xml2::xml_text()
             )
             }
     return(votaciones)

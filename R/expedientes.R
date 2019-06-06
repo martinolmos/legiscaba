@@ -297,9 +297,9 @@ getVotacionesExpediente <- function(IdExpediente) {
 votacionesToDF <- function(Votaciones) {
     votaciones <- list()
 
-    xml2::xml_ns_strip(Votaciones)
+    # xml2::xml_ns_strip(Votaciones)
 
-    Votaciones <- Votaciones %>% xml2::xml_find_first("//VotacionExpediente")
+    Votaciones <- Votaciones %>% xml2::xml_find_first("//d1:VotacionExpediente")
 
     votaciones$general <- Votaciones %>%
         purrr::map_df(~dplyr::tibble(

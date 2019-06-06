@@ -297,10 +297,10 @@ getVotacionesExpediente <- function(IdExpediente) {
 votacionesToDF <- function(Votaciones) {
     votaciones <- list()
 
-    xml2::xml_ns_strip(Votaciones)
+    # xml2::xml_ns_strip(Votaciones)
 
     votaciones$general <- Votaciones %>%
-        xml2::xml_find_first("//VotacionExpediente") %>%
+        xml2::xml_find_first("//d1:VotacionExpediente") %>%
         purrr::map_df(~dplyr::tibble(
             afirmativos = xml2::xml_child(.,"afirmativos") %>%
                 xml2::xml_text(),
@@ -319,7 +319,7 @@ votacionesToDF <- function(Votaciones) {
             secretarios_sesion = xml2::xml_child(.,"secretarios_sesion"))
 
     votaciones$por_bloque <- Votaciones %>%
-        xml2::xml_find_first("//VotacionExpediente") %>%
+        xml2::xml_find_first("//d1:VotacionExpediente") %>%
         xml2::xml_find_all("//VotosBloque") %>%
         purrr::map_df(~dplyr::tibble(
             afirmativos = xml2::xml_child(.,"afirmativos") %>%
@@ -337,7 +337,7 @@ votacionesToDF <- function(Votaciones) {
         ))
 
     votaciones$por_legislador <- Votaciones %>%
-        xml2::xml_find_first("//VotacionExpediente") %>%
+        xml2::xml_find_first("//d1:VotacionExpediente") %>%
         xml2::xml_find_all("//VotoLegislador") %>%
         purrr::map_df(~dplyr::tibble(
             id_legilador = xml2::xml_child(.,"id_legilador") %>%

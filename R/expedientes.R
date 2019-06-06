@@ -297,32 +297,43 @@ getVotacionesExpediente <- function(IdExpediente) {
 votacionesToDF <- function(Votaciones) {
     votaciones <- list()
 
-    # xml2::xml_ns_strip(Votaciones)
+    xml2::xml_ns_strip(Votaciones)
 
-    Votaciones <- Votaciones %>% xml2::xml_find_first("//d1:VotacionExpediente")
+    Votaciones <- Votaciones %>% xml2::xml_find_first("//VotacionExpediente")
 
-    votaciones$general <- Votaciones %>%
-        purrr::map_df(~dplyr::tibble(
+    votaciones$general <- Votaciones %>% {
+        dplyr::tibble(
             afirmativos = xml2::xml_child(.,"afirmativos") %>%
                 xml2::xml_text(),
             negativos = xml2::xml_child(.,"negativos") %>%
                 xml2::xml_text(),
             abstenciones = xml2::xml_child(.,"abstenciones") %>%
-                xml2::xml_text()),
-            sin_votar = xml2::xml_child(.,"sin_votar"),
-            id_votacion = xml2::xml_child(.,"id_votacion"),
-            asunto = xml2::xml_child(.,"asunto"),
-            id_sesion = xml2::xml_child(.,"id_sesion"),
-            fch_sesion = xml2::xml_child(.,"fch_sesion"),
-            tipo_sesion = xml2::xml_child(.,"tipo_sesion"),
-            desc_sesion = xml2::xml_child(.,"desc_sesion"),
-            presidente_sesion = xml2::xml_child(.,"presidente_sesion"),
-            secretarios_sesion = xml2::xml_child(.,"secretarios_sesion"))
+                xml2::xml_text(),
+            sin_votar = xml2::xml_child(.,"sin_votar") %>%
+                xml2::xml_text(),
+            id_votacion = xml2::xml_child(.,"id_votacion") %>%
+                xml2::xml_text(),
+            asunto = xml2::xml_child(.,"asunto") %>%
+                xml2::xml_text(),
+            id_sesion = xml2::xml_child(.,"id_sesion") %>%
+                xml2::xml_text(),
+            fch_sesion = xml2::xml_child(.,"fch_sesion") %>%
+                xml2::xml_text(),
+            tipo_sesion = xml2::xml_child(.,"tipo_sesion") %>%
+                xml2::xml_text(),
+            desc_sesion = xml2::xml_child(.,"desc_sesion") %>%
+                xml2::xml_text(),
+            presidente_sesion = xml2::xml_child(.,"presidente_sesion") %>%
+                xml2::xml_text(),
+            secretarios_sesion = xml2::xml_child(.,"secretarios_sesion") %>%
+                xml2::xml_text()
+        )
+        }
 
     votaciones$por_bloque <- Votaciones %>%
         # xml2::xml_find_first("//d1:VotacionExpediente") %>%
-        xml2::xml_find_all("//VotosBloque") %>%
-        purrr::map_df(~dplyr::tibble(
+        xml2::xml_find_all("//VotosBloque") %>% {
+            dplyr::tibble(
             afirmativos = xml2::xml_child(.,"afirmativos") %>%
                 xml2::xml_text(),
             negativos = xml2::xml_child(.,"negativos") %>%
@@ -334,19 +345,48 @@ votacionesToDF <- function(Votaciones) {
             id_bloque = xml2::xml_child(.,"id_bloque") %>%
                 xml2::xml_text(),
             bloque = xml2::xml_child(.,"bloque") %>%
+                xml2::xml_text(),
+            id_votacion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("id_votacion") %>%
+                xml2::xml_text(),
+            asunto = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("asunto") %>%
+                xml2::xml_text(),
+            id_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("id_sesion") %>%
+                xml2::xml_text(),
+            fch_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("fch_sesion") %>%
+                xml2::xml_text(),
+            tipo_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("tipo_sesion") %>%
+                xml2::xml_text(),
+            desc_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("desc_sesion") %>%
+                xml2::xml_text(),
+            presidente_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("presidente_sesion") %>%
                 xml2::xml_text()
-        ))
+            )
+            }
 
     votaciones$por_legislador <- Votaciones %>%
         # xml2::xml_find_first("//d1:VotacionExpediente") %>%
-        xml2::xml_find_all("//VotoLegislador") %>%
-        purrr::map_df(~dplyr::tibble(
+        xml2::xml_find_all("//VotoLegislador") %>% {
+            dplyr::tibble(
             id_legilador = xml2::xml_child(.,"id_legilador") %>%
                 xml2::xml_text(),
             apellido = xml2::xml_child(.,"apellido") %>%
                 xml2::xml_text(),
             nombre = xml2::xml_child(.,"nombre") %>%
-                xml2::xml_child(),
+                xml2::xml_text(),
             id_bloque = xml2::xml_child(.,"id_bloque") %>%
                 xml2::xml_text(),
             bloque = xml2::xml_child(.,"bloque") %>%
@@ -354,8 +394,37 @@ votacionesToDF <- function(Votaciones) {
             presencia = xml2::xml_child(.,"presencia") %>%
                 xml2::xml_text(),
             voto = xml2::xml_child(.,"voto") %>%
+                xml2::xml_text(),
+            id_votacion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("id_votacion") %>%
+                xml2::xml_text(),
+            asunto = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("asunto") %>%
+                xml2::xml_text(),
+            id_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("id_sesion") %>%
+                xml2::xml_text(),
+            fch_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("fch_sesion") %>%
+                xml2::xml_text(),
+            tipo_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("tipo_sesion") %>%
+                xml2::xml_text(),
+            desc_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("desc_sesion") %>%
+                xml2::xml_text(),
+            presidente_sesion = xml2::xml_parent(.) %>%
+                xml2::xml_parent() %>%
+                xml2::xml_child("presidente_sesion") %>%
                 xml2::xml_text()
-        ))
+            )
+            }
     return(votaciones)
 }
 

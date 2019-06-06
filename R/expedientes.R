@@ -355,5 +355,6 @@ votacionesToDF <- function(Votaciones) {
             voto = xml2::xml_child(.,"voto") %>%
                 xml2::xml_text()
         ))
+    return(votaciones)
 }
 

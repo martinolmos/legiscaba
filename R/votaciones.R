@@ -29,7 +29,7 @@ getVotacionesExpediente <- function(IdExpediente) {
         }
 
         parsed <- httr::content(resp)
-        votacionesToDF(parsed)
+        votacionesToDF(parsed, IdExpediente)
 
 }
 
@@ -39,7 +39,7 @@ getVotacionesExpediente <- function(IdExpediente) {
 #' @importFrom dplyr %>%
 
 
-votacionesToDF <- function(Votaciones) {
+votacionesToDF <- function(Votaciones, IdExpediente) {
         votaciones <- list()
 
         xml2::xml_ns_strip(Votaciones)
@@ -50,6 +50,7 @@ votacionesToDF <- function(Votaciones) {
                 votaciones[[i]] <- list()
                 votaciones[[i]][[1]] <- Votaciones[[i]] %>% {
                         dplyr::tibble(
+                                id_expediente = IdExpediente,
                                 afirmativos = xml2::xml_child(.,"afirmativos") %>%
                                         xml2::xml_text(),
                                 negativos = xml2::xml_child(.,"negativos") %>%
@@ -84,6 +85,7 @@ votacionesToDF <- function(Votaciones) {
                 votaciones[[i]][[2]] <- votosxbloque %>%
                         xml2::xml_children() %>% {
                                 dplyr::tibble(
+                                        id_expediente = IdExpediente,
                                         afirmativos = xml2::xml_child(.,"afirmativos") %>%
                                                 xml2::xml_text(),
                                         negativos = xml2::xml_child(.,"negativos") %>%
@@ -95,7 +97,11 @@ votacionesToDF <- function(Votaciones) {
                                         id_bloque = xml2::xml_child(.,"id_bloque") %>%
                                                 xml2::xml_text(),
                                         bloque = xml2::xml_child(.,"bloque") %>%
-                                                xml2::xml_text()
+                                                xml2::xml_text(),
+                                        id_votacion = votaciones[[i]][[1]]$id_votacion,
+                                        id_sesion = votaciones[[i]][[1]]$id_sesion,
+                                        fch_sesion = votaciones[[i]][[1]]$fch_sesion,
+                                        asunto = votaciones[[i]][[1]]$asunto
                                 )
                         }
 
@@ -106,6 +112,7 @@ votacionesToDF <- function(Votaciones) {
                 votaciones[[i]][[3]] <- votosxlegislador %>%
                         xml2::xml_children() %>% {
                                 dplyr::tibble(
+                                        id_expediente = IdExpediente,
                                         id_legilador = xml2::xml_child(.,"id_legilador") %>%
                                                 xml2::xml_text(),
                                         apellido = xml2::xml_child(.,"apellido") %>%
@@ -119,7 +126,11 @@ votacionesToDF <- function(Votaciones) {
                                         presencia = xml2::xml_child(.,"presencia") %>%
                                                 xml2::xml_text(),
                                         voto = xml2::xml_child(.,"voto") %>%
-                                                xml2::xml_text()
+                                                xml2::xml_text(),
+                                        id_votacion = votaciones[[i]][[1]]$id_votacion,
+                                        id_sesion = votaciones[[i]][[1]]$id_sesion,
+                                        fch_sesion = votaciones[[i]][[1]]$fch_sesion,
+                                        asunto = votaciones[[i]][[1]]$asunto
                                 )
                         }
                 names(votaciones[[i]]) <- c("Resultado General",

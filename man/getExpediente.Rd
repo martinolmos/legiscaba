@@ -12,24 +12,31 @@ getExpediente(IdProyectoTipo = "", IdAutoresInternos = "",
 \arguments{
 \item{IdProyectoTipo}{integer, ID del tipo de proyecto. Ver getTiposProyecto}
 
-\item{IdAutoresInternos}{integer, ID de el/la autor/a # debería haber un lugar donde buscar el id por nombre}
+\item{IdAutoresInternos}{integer, ID de el/la autor/a}
 
-\item{IdUbicacion}{integer, ID de la ubicación}
+\item{IdUbicacion}{integer, ID de la ubicacion}
 
 \item{IdEstado}{integer, ID del Estado}
 
 \item{Sumario}{character, Texto a buscar en el sumario}
 
-\item{SumarioExacto}{integer, Macheo exacto: 0 para Falso y 1 para Verdadero}
+\item{SumarioExacto}{integer, (Requerido) Macheo exacto: 0 para Falso y 1 para Verdadero}
 
-\item{FechaDesde}{character, Acotar búsqueda desde fecha. Formato dd/mm/aaaa}
+\item{FechaDesde}{character, Acota busqueda desde una fecha. Formato dd/mm/aaaa}
 
-\item{FechaHasta}{character, Acotar búqueda hasta fecha. Formato dd/mm/aaaa}
+\item{FechaHasta}{character, Acota buqueda hasta una fecha. Formato dd/mm/aaaa}
 
-\item{AnioParlamentario}{integer, Acotar la búsqueda a un año. Formato aaaa}
+\item{AnioParlamentario}{integer, Acota búsqueda a un año. Formato aaaa}
 
-\item{Limite}{integer, Limitar la respuesta a un número de registros}
+\item{Limite}{integer, Limita la respuesta a un numero de registros}
+}
+\value{
+Un objeto de clase "tibble"
 }
 \description{
 Función que hace un requerimiento de expedientes
+}
+\examples{
+prueba_expediente <- getExpediente(IdProyectoTipo = 1, SumarioExacto = 0, Sumario = "planeamiento", FechaDesde = "01/03/2018", FechaHasta = "01/12/2018")
+
 }

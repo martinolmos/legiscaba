@@ -9,6 +9,13 @@ getExpedienteCabeza(IdExpediente)
 \arguments{
 \item{IdExpediente}{integer ID de un expediente}
 }
+\value{
+Un objeto de clase "tibble"
+}
 \description{
 Funcion que requiere el expediente cabeza de un expediente
+}
+\examples{
+prueba_cabeza <- getExpedienteCabeza(98985)
+
 }

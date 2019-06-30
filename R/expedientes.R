@@ -1,88 +1,120 @@
 #' Función que hace un requerimiento de expedientes
 #'
 #' @param IdProyectoTipo integer, ID del tipo de proyecto. Ver getTiposProyecto
-#' @param IdAutoresInternos integer, ID de el/la autor/a # debería haber un lugar donde buscar el id por nombre
-#' @param IdUbicacion integer, ID de la ubicación
+#' @param IdAutoresInternos integer, ID de el/la autor/a
+#' @param IdUbicacion integer, ID de la ubicacion
 #' @param IdEstado integer, ID del Estado
 #' @param Sumario character, Texto a buscar en el sumario
-#' @param SumarioExacto integer, Macheo exacto: 0 para Falso y 1 para Verdadero
-#' @param FechaDesde character, Acotar búsqueda desde fecha. Formato dd/mm/aaaa
-#' @param FechaHasta character, Acotar búqueda hasta fecha. Formato dd/mm/aaaa
-#' @param AnioParlamentario integer, Acotar la búsqueda a un año. Formato aaaa
-#' @param Limite integer, Limitar la respuesta a un número de registros
+#' @param SumarioExacto integer, (Requerido) Macheo exacto: 0 para Falso y 1 para Verdadero
+#' @param FechaDesde character, Acota busqueda desde una fecha. Formato dd/mm/aaaa
+#' @param FechaHasta character, Acota buqueda hasta una fecha. Formato dd/mm/aaaa
+#' @param AnioParlamentario integer, Acota búsqueda a un año. Formato aaaa
+#' @param Limite integer, Limita la respuesta a un numero de registros
+#'
+#' @return Un objeto de clase "tibble"
+#'
+#' @examples
+#' prueba_expediente <- getExpediente(IdProyectoTipo = 1, SumarioExacto = 0, Sumario = "planeamiento", FechaDesde = "01/03/2018", FechaHasta = "01/12/2018")
+#'
 #' @export
 
-getExpediente <- function(IdProyectoTipo = "", IdAutoresInternos = "",
-                          IdUbicacion = "", IdEstado = "", Sumario = "",
-                          SumarioExacto = "0", FechaDesde = "", FechaHasta = "",
-                          AnioParlamentario = "", Limite = "") {
+getExpediente <-
+    function(IdProyectoTipo = "",
+             IdAutoresInternos = "",
+             IdUbicacion = "",
+             IdEstado = "",
+             Sumario = "",
+             SumarioExacto = "0",
+             FechaDesde = "",
+             FechaHasta = "",
+             AnioParlamentario = "",
+             Limite = "") {
+        base_url <- "https://parlamentaria.legislatura.gov.ar"
 
-    base_url <- "https://parlamentaria.legislatura.gov.ar"
+        path <- "webservices/Json.asmx/GetExpedienteAvanzada"
 
-    path <- "webservices/Json.asmx/GetExpedienteAvanzada"
+        query <-
+            list(
+                IdProyectoTipo = IdProyectoTipo,
+                IdAutoresInternos = IdAutoresInternos,
+                IdUbicacion = IdUbicacion,
+                IdEstado = IdEstado,
+                Sumario = Sumario,
+                SumarioExacto = SumarioExacto,
+                FechaDesde = FechaDesde,
+                FechaHasta = FechaHasta,
+                AnioParlamentario = AnioParlamentario,
+                Limite = Limite
+            )
 
-    query <- list(IdProyectoTipo = IdProyectoTipo, IdAutoresInternos = IdAutoresInternos,
-        IdUbicacion = IdUbicacion, IdEstado = IdEstado, Sumario = Sumario, SumarioExacto = SumarioExacto,
-        FechaDesde = FechaDesde, FechaHasta = FechaHasta, AnioParlamentario = AnioParlamentario,
-        Limite = Limite)
+        myurl <-
+            httr::modify_url(url = base_url,
+                             path = path,
+                             query = query)
 
-    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+        ua <-
+            httr::user_agent("https://github.com/martinolmos/legiscaba")
 
-    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+        resp <- httr::GET(url = myurl, ua)
 
-    resp <- httr::GET(url = myurl, ua)
-
-    if (httr::status_code(resp) != 200) {
-        stop(
-            sprintf(
+        if (httr::status_code(resp) != 200) {
+            stop(sprintf(
                 "Falló el requerimiento a la API [%s]",
-                httr::status_code(resp)),
+                httr::status_code(resp)
+            ),
             call. = FALSE)
+        }
+
+        if (httr::http_type(resp) != "text/xml") {
+            stop("la API no retornó un xml", call. = FALSE)
+        }
+
+        parsed <- httr::content(resp)
+
+        expedienteToDF(parsed)
     }
-
-    if (httr::http_type(resp) != "text/xml") {
-        stop("la API no retornó un xml", call. = FALSE)
-    }
-
-    parsed <- httr::content(resp)
-
-    expedienteToDF(parsed)
-}
 
 
 #' Función que parsea un expediente de XML a tibble
 #'
 #' @param Expediente expediente en formato XML
+#'
 #' @importFrom dplyr %>%
 
 expedienteToDF <- function(Expediente = expediente) {
     xml2::xml_ns_strip(Expediente)
 
-    rows <- Expediente %>%
-        xml2::xml_find_all("//expedienteAvanzado") %>%
-        purrr::map(~ xml2::xml_find_all(., "*"))
-
-    rows_df <- dplyr::tibble(row = seq_along(rows),
-                             nodeset = rows)
-
-    rows_df %>%
-        dplyr::mutate(col_name_raw = nodeset %>%
-                          purrr::map(~ xml2::xml_name(.)),
-                      cell_text = nodeset %>%
-                          purrr::map(~ xml2::xml_text(.)),
-                      i = nodeset %>%
-                          purrr::map(~ seq_along(.))) %>%
-        dplyr::select(row, i, col_name_raw, cell_text) %>%
-        tidyr::unnest() %>%
-        dplyr::select(-i) %>%
-        tidyr::spread(key = col_name_raw, value = cell_text) %>%
-        dplyr::select(-row)
-
+    children_to_df(Expediente) %>%
+        dplyr::mutate(fch_inicio = fix_timestamp(fch_inicio),
+                      fch_movimiento = fix_timestamp(fch_movimiento)) %>%
+        dplyr::select(id_expediente,
+                      nro_de_expediente,
+                      nro_de_orden_JefeGob,
+                      fch_inicio,
+                      autor_id,
+                      autor_des,
+                      coautores_id,
+                      coautores_des,
+                      id_proyecto_tipo,
+                      tipo_proyecto_des,
+                      descripcion,
+                      sumario,
+                      TieneSancion,
+                      ubicacion_des,
+                      fch_movimiento,
+                      urlDoc,
+                      id_business_party)
 }
 
 #' Funcion para requerir los giros de un expediente
 #'
 #' @param IdExpediente Integer Numero de ID del expediente
+#'
+#' @return Un objeto de clase "tibble"
+#'
+#' @examples
+#' prueba_giros <- getExpedienteGiros(75640)
+#'
 #' @export
 
 getExpedienteGiros <- function(IdExpediente) {
@@ -92,18 +124,22 @@ getExpedienteGiros <- function(IdExpediente) {
 
     query <- list(IdExpediente = as.integer(IdExpediente))
 
-    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+    myurl <-
+        httr::modify_url(url = base_url,
+                         path = path,
+                         query = query)
 
-    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+    ua <-
+        httr::user_agent("https://github.com/martinolmos/legiscaba")
 
     resp <- httr::GET(url = myurl, ua)
 
     if (httr::status_code(resp) != 200) {
-        stop(
-            sprintf(
-                "Falló el requerimiento a la API [%s]",
-                httr::status_code(resp)),
-            call. = FALSE)
+        stop(sprintf(
+            "Falló el requerimiento a la API [%s]",
+            httr::status_code(resp)
+        ),
+        call. = FALSE)
     }
 
     if (httr::http_type(resp) != "text/xml") {
@@ -121,49 +157,49 @@ getExpedienteGiros <- function(IdExpediente) {
 
 girosToDF <- function(Giros) {
     xml2::xml_ns_strip(Giros)
-
-    Giros %>%
-        xml2::xml_find_all("//expedienteGiros") %>%
-        purrr::map_df(~ dplyr::tibble(
-            id_expediente = xml2::xml_child(.,"id_expediente") %>%
-                xml2::xml_text(),
-            orden = xml2::xml_child(.,"orden") %>%
-                xml2::xml_text(),
-            expediente_giro_tipo_des = xml2::xml_child(., "expediente_giro_tipo_des") %>%
-                xml2::xml_text(),
-            id_comision = xml2::xml_child(.,"id_comision") %>%
-                xml2::xml_text(),
-            comision_des = xml2::xml_child(.,"comision_des") %>%
-                xml2::xml_text(),
-            comision_url = xml2::xml_child(.,"comision_url") %>%
-                xml2::xml_text()))
-
+    children_to_df(Giros) %>%
+        dplyr::select(id_expediente,
+                      orden,
+                      id_comision,
+                      comision_des,
+                      comision_url,
+                      expediente_giro_tipo_des)
 }
 
 #' Funcion para requerir los movimientos de un expediente
 #'
 #' @param IdExpediente integer Numero de ID de un expediente
+#'
+#' @return Un objeto de clase "tibble"
+#'
+#' @examples
+#' prueba_movs <- getExpMovimientos(75640)
+#'
 #' @export
 
-getExpMovimientos <- function(IdExpediente){
+getExpMovimientos <- function(IdExpediente) {
     base_url <- "https://parlamentaria.legislatura.gov.ar"
 
     path <- "webservices/Json.asmx/GetExpedienteMovimientos"
 
     query <- list(IdExpediente = as.integer(IdExpediente))
 
-    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+    myurl <-
+        httr::modify_url(url = base_url,
+                         path = path,
+                         query = query)
 
-    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+    ua <-
+        httr::user_agent("https://github.com/martinolmos/legiscaba")
 
     resp <- httr::GET(url = myurl, ua)
 
     if (httr::status_code(resp) != 200) {
-        stop(
-            sprintf(
-                "Falló el requerimiento a la API [%s]",
-                httr::status_code(resp)),
-            call. = FALSE)
+        stop(sprintf(
+            "Falló el requerimiento a la API [%s]",
+            httr::status_code(resp)
+        ),
+        call. = FALSE)
     }
 
     if (httr::http_type(resp) != "text/xml") {
@@ -181,26 +217,24 @@ getExpMovimientos <- function(IdExpediente){
 
 
 moviToDF <- function(Movimientos) {
-
     xml2::xml_ns_strip(Movimientos)
-
-    Movimientos %>%
-        xml2::xml_find_all("//expedienteMovimientos") %>%
-        purrr::map_df(~dplyr::tibble(
-            id_expediente = xml2::xml_child(.,"id_expediente") %>%
-                xml2::xml_text(),
-            fch_movimiento = xml2::xml_child(.,"fch_movimiento") %>%
-                xml2::xml_text(),
-            ubicacion_des = xml2::xml_child(., "ubicacion_des") %>%
-                xml2::xml_text(),
-            descripcion = xml2::xml_child(.,"descripcion") %>%
-                xml2::xml_text()))
-
+    children_to_df(Movimientos) %>%
+        dplyr::mutate(fch_movimiento = fix_timestamp(fch_movimiento)) %>%
+        dplyr::select(id_expediente,
+                      fch_movimiento,
+                      ubicacion_des,
+                      descripcion)
 }
 
 #' Funcion que requiere el expediente cabeza de un expediente
 #'
 #' @param IdExpediente integer ID de un expediente
+#'
+#' @return Un objeto de clase "tibble"
+#'
+#' @examples
+#' prueba_cabeza <- getExpedienteCabeza(98985)
+#'
 #' @export
 
 getExpedienteCabeza <- function(IdExpediente) {
@@ -210,18 +244,22 @@ getExpedienteCabeza <- function(IdExpediente) {
 
     query <- list(IdExpediente = as.integer(IdExpediente))
 
-    myurl <- httr::modify_url(url = base_url, path = path, query = query)
+    myurl <-
+        httr::modify_url(url = base_url,
+                         path = path,
+                         query = query)
 
-    ua <- httr::user_agent("https://github.com/martinolmos/legiscaba")
+    ua <-
+        httr::user_agent("https://github.com/martinolmos/legiscaba")
 
     resp <- httr::GET(url = myurl, ua)
 
     if (httr::status_code(resp) != 200) {
-        stop(
-            sprintf(
-                "Falló el requerimiento a la API [%s]",
-                httr::status_code(resp)),
-            call. = FALSE)
+        stop(sprintf(
+            "Falló el requerimiento a la API [%s]",
+            httr::status_code(resp)
+        ),
+        call. = FALSE)
     }
 
     if (httr::http_type(resp) != "text/xml") {
@@ -241,17 +279,6 @@ getExpedienteCabeza <- function(IdExpediente) {
 expCabezaToDF <- function(ExpCabeza) {
 
     xml2::xml_ns_strip(ExpCabeza)
-
-    ExpCabeza %>%
-        xml2::xml_find_all("//expedienteCabeza") %>%
-        purrr::map_df(~dplyr::tibble(
-            id_expediente_cabeza = xml2::xml_child(.,"id_expediente") %>%
-                xml2::xml_text(),
-            id_expediente_agregado = xml2::xml_child(.,"agregado_id_expediente") %>%
-                xml2::xml_text(),
-            nro_expediente_cabeza = xml2::xml_child(.,"cabeza_nro_de_expediente") %>%
-                xml2::xml_text()))
-
+    children_to_df(ExpCabeza) %>%
+        dplyr::rename(cabeza_id_expediente = id_expediente)
 }
-
-

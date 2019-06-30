@@ -9,6 +9,17 @@ getVotacionesExpediente(IdExpediente)
 \arguments{
 \item{IdExpediente}{integer ID de un expediente}
 }
+\value{
+Una lista con un elemento por cada votacion que tuvo el expediente (en general los que tienen dos votaciones son los expedientes que requieren doble lectura).
+Cada uno de estos elementos es a su vez una lista con tres data.frames correspondientes a:
+1- Resultado General: el resultado agregado de la votacion
+2- Votos x Bloque: El resultado de la votacion por bloque legislativo
+3- Votos x Legislador: El resultado de la votacion por legislador
+}
 \description{
 Funcion que requiere las votaciones de un expediente
+}
+\examples{
+prueba_votaciones <- getVotacionesExpediente(112158)
+
 }

@@ -4,7 +4,7 @@
 \alias{votacionesToDF}
 \title{Función que parsea las votaciones de un expediente de XML a tibble}
 \usage{
-votacionesToDF(Votaciones)
+votacionesToDF(Votaciones, IdExpediente)
 }
 \arguments{
 \item{Votaciones}{expediente cabeza de un expediente en formato XML}

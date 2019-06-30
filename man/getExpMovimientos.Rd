@@ -9,6 +9,13 @@ getExpMovimientos(IdExpediente)
 \arguments{
 \item{IdExpediente}{integer Numero de ID de un expediente}
 }
+\value{
+Un objeto de clase "tibble"
+}
 \description{
 Funcion para requerir los movimientos de un expediente
+}
+\examples{
+prueba_movs <- getExpMovimientos(75640)
+
 }

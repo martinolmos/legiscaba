@@ -12,7 +12,8 @@ LazyData: true
 Imports:
     httr,
     xml2,
-    dplyr
+    dplyr,
+    lubridate
 Suggests: 
     testthat
 RoxygenNote: 6.1.1

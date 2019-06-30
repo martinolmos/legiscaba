@@ -9,6 +9,13 @@ getExpedienteGiros(IdExpediente)
 \arguments{
 \item{IdExpediente}{Integer Numero de ID del expediente}
 }
+\value{
+Un objeto de clase "tibble"
+}
 \description{
 Funcion para requerir los giros de un expediente
+}
+\examples{
+prueba_giros <- getExpedienteGiros(75640)
+
 }

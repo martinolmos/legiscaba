@@ -19,3 +19,6 @@ Funcion para requerir los giros de un expediente
 prueba_giros <- getExpedienteGiros(75640)
 
 }
+\author{
+Martin Olmos, \email{molmos@itba.edu.ar}
+}

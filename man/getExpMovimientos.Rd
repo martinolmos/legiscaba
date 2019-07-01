@@ -19,3 +19,6 @@ Funcion para requerir los movimientos de un expediente
 prueba_movs <- getExpMovimientos(75640)
 
 }
+\author{
+Martin Olmos, \email{molmos@itba.edu.ar}
+}

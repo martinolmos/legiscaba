@@ -23,3 +23,6 @@ Funcion que requiere las votaciones de un expediente
 prueba_votaciones <- getVotacionesExpediente(112158)
 
 }
+\author{
+Martin Olmos, \email{molmos@itba.edu.ar}
+}

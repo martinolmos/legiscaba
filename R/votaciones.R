@@ -2,6 +2,8 @@
 #'
 #' @param IdExpediente integer ID de un expediente
 #'
+#' @author Martin Olmos, \email{molmos@@itba.edu.ar}
+#'
 #' @return
 #' Una lista con un elemento por cada votacion que tuvo el expediente (en general los que tienen dos votaciones son los expedientes que requieren doble lectura).
 #' Cada uno de estos elementos es a su vez una lista con tres data.frames correspondientes a:

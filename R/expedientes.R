@@ -13,6 +13,8 @@
 #'
 #' @return Un objeto de clase "tibble"
 #'
+#' @author Martin Olmos, \email{molmos@@itba.edu.ar}
+#'
 #' @examples
 #' prueba_expediente <- getExpediente(IdProyectoTipo = 1, SumarioExacto = 0, Sumario = "planeamiento", FechaDesde = "01/03/2018", FechaHasta = "01/12/2018")
 #'
@@ -112,6 +114,8 @@ expedienteToDF <- function(Expediente = expediente) {
 #'
 #' @return Un objeto de clase "tibble"
 #'
+#' @author Martin Olmos, \email{molmos@@itba.edu.ar}
+#'
 #' @examples
 #' prueba_giros <- getExpedienteGiros(75640)
 #'
@@ -172,6 +176,8 @@ girosToDF <- function(Giros) {
 #'
 #' @return Un objeto de clase "tibble"
 #'
+#' @author Martin Olmos, \email{molmos@@itba.edu.ar}
+#'
 #' @examples
 #' prueba_movs <- getExpMovimientos(75640)
 #'
@@ -231,6 +237,8 @@ moviToDF <- function(Movimientos) {
 #' @param IdExpediente integer ID de un expediente
 #'
 #' @return Un objeto de clase "tibble"
+#'
+#' @author Martin Olmos, \email{molmos@@itba.edu.ar}
 #'
 #' @examples
 #' prueba_cabeza <- getExpedienteCabeza(98985)

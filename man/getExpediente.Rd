@@ -40,3 +40,6 @@ Función que hace un requerimiento de expedientes
 prueba_expediente <- getExpediente(IdProyectoTipo = 1, SumarioExacto = 0, Sumario = "planeamiento", FechaDesde = "01/03/2018", FechaHasta = "01/12/2018")
 
 }
+\author{
+Martin Olmos, \email{molmos@itba.edu.ar}
+}

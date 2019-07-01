@@ -19,3 +19,6 @@ Funcion que requiere el expediente cabeza de un expediente
 prueba_cabeza <- getExpedienteCabeza(98985)
 
 }
+\author{
+Martin Olmos, \email{molmos@itba.edu.ar}
+}

@@ -16,3 +16,6 @@ prueba_cabeza <- getExpedienteCabeza(98985)
 
 # Test para getVotacionesExpediente
 prueba_votaciones <- getVotacionesExpediente(112158)
+
+# Teset para getDiputadosActivos
+prueba_dipuActivos <- getDiputadosActivos(82)

@@ -1,12 +1,13 @@
 Package: legiscaba
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Cliente R del Webservice de Secretaria Parlamentaria de la Legislatura de la Ciudad de Buenos Aires
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: c(person(given = "Martin", family = "Olmos", email = "molmos@itba.edu.ar", role = c("aut", "cre")))
+Author: Martin Olmos [aut, cre]
+Maintainer: Martin Olmos <molmos@itba.edu.ar>
+Description: Cliente R del Webservice de Secretaria Parlamentaria de la Legislatura de la Ciudad de Buenos Aires
+    Paquete de R que "envuelve" el mencionado webservice y permite hacer en forma programatica mas facilmente y obtener datos parseados, generalmente en forma de "tibble" o data.frame.
+License: LGPL-2
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -16,4 +17,5 @@ Imports:
     lubridate
 Suggests: 
     testthat
+BugReports: https://github.com/martinolmos/legiscaba/issues
 RoxygenNote: 6.1.1

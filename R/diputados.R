@@ -77,7 +77,7 @@ dipuActivosToDF <- function(dipu_activos) {
 #' @return Objeto de clase "tibble"
 #'
 #' @examples
-#' prueba_dipuHistorico <- getDiputadosHistorico()
+#' prueba_dipuHistorico <- getDiputadosHistorico(30650)
 #'
 #' @author Martin Olmos, \email{molmos@@itba.edu.ar}
 #'
@@ -116,7 +116,7 @@ getDiputadosHistorico <- function() {
     dipuHistoricoToDF(parsed)
 }
 
-#' Parsea documento XML con datos de Diputados activos a tibble
+#' Parsea documento XML con datos con listado historico de Diputados a tibble
 #'
 #' @param dipu_historico documento-XML con datos de Diputados activos
 
@@ -133,4 +133,85 @@ dipuHistoricoToDF <- function(dipu_historico) {
                       cantidad_exptes_autor,
                       cantidad_exptes_coautor,
                       cantidad_mandatos)
+}
+
+#' Trae los datos personales y partidarios por diputado
+#'
+#' @param id_legislador integer (Requerido) Identificador del legislador
+#'
+#' @return Objeto de clase "tibble"
+#'
+#' @examples
+#' prueba_dipuDatos <- getDiputadoDatos(30650)
+#'
+#' @author Martin Olmos, \email{molmos@@itba.edu.ar}
+#'
+#' @export
+
+getDiputadoDatos <- function(id_legislador) {
+
+    base_url <- "https://parlamentaria.legislatura.gov.ar"
+
+    path <- "webservices/Json.asmx/GetDiputadoDatos"
+
+    query <- list(id_legislador=id_legislador)
+
+    myurl <-
+        httr::modify_url(url = base_url,
+                         path = path,
+                         query = query)
+
+    ua <-
+        httr::user_agent("https://github.com/martinolmos/legiscaba")
+
+    resp <- httr::GET(url = myurl, ua)
+
+    if (httr::status_code(resp) != 200) {
+        stop(sprintf(
+            "Falló el requerimiento a la API [%s]",
+            httr::status_code(resp)
+        ),
+        call. = FALSE)
+    }
+
+    if (httr::http_type(resp) != "text/xml") {
+        stop("la API no retornó un xml", call. = FALSE)
+    }
+
+    parsed <- httr::content(resp)
+    dipuDatosToDF(parsed)
+
+}
+
+#' Parsea documento XML con datos de un Diputado a tibble
+#'
+#' @param datos_legislador documento-XML con datos de Diputados activos
+
+dipuDatosToDF <- function(datos_legislador) {
+    xml2::xml_ns_strip(datos_legislador)
+
+    children_to_df(datos_legislador) %>%
+        dplyr::mutate(fecha_nacimiento = lubridate::dmy(fecha_nacimiento),
+                      fecha_inicio_mandato = lubridate::dmy(fecha_inicio_mandato),
+                      fecha_fin_mandato = lubridate::dmy(fecha_fin_mandato)) %>%
+        dplyr::select(id_legislador,
+                      apellido,
+                      nombre,
+                      id_autor,
+                      id_sexo,
+                      sexo,
+                      fecha_nacimiento,
+                      fecha_inicio_mandato,
+                      fecha_fin_mandato,
+                      oficina,
+                      telefono,
+                      id_bloque,
+                      bloque,
+                      bloque_logo,
+                      bloque_color,
+                      id_bloque_cargo_tipo,
+                      cargo_bloque,
+                      id_legislador_reemplazo,
+                      reemplaza_a,
+                      motivo_reemplazo)
 }

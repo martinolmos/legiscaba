@@ -77,7 +77,7 @@ dipuActivosToDF <- function(dipu_activos) {
 #' @return Objeto de clase "tibble"
 #'
 #' @examples
-#' prueba_dipuHistorico <- getDiputadosHistorico(30650)
+#' prueba_dipuHistorico <- getDiputadosHistorico()
 #'
 #' @author Martin Olmos, \email{molmos@@itba.edu.ar}
 #'

@@ -22,3 +22,6 @@ prueba_dipuActivos <- getDiputadosActivos(82)
 
 # Test para getDiputadosHistorico
 prueba_dipuHistorico <- getDiputadosHistorico(30650)
+
+# Test para getComisionesPorDiputado
+prueba_comisionesPorDiputado <- getComisionesPorDiputado(30651)

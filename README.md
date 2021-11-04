@@ -1,5 +1,7 @@
 ## legiscaba: Cliente R (no oficial) del webservice de la Legislatura de la Ciudad de Buenos Aires
 
+## ATENCIÓN: este repo no está siendo mantenido
+
 ## Descripción General
 
 *legiscaba* es un envoltorio simple del webservice de la Secretaría Parlamentaria de la Legislatura de la Ciudad de Buenos Aires. Permite realizar requerimientos de datos en forma sencilla y se ocupa de parsear los resultados de xml a data.frame.
